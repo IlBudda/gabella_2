@@ -1,11 +1,45 @@
-<div align="center">
+# MagazzinoApp - Gestionale di Magazzino
 
-<img width="1200" height="475" alt="GHBanner" src="https://github.com/user-attachments/assets/0aa67016-6eaf-458a-adb2-6e31a0763ed6" />
+Un'applicazione web full-stack per la gestione del magazzino, sviluppata con Next.js 14, Prisma, PostgreSQL e Tailwind CSS.
+Questo progetto è progettato per funzionare completamente in locale, senza dipendenze da servizi cloud esterni.
 
-  <h1>Built with AI Studio</h2>
+## Prerequisiti
+- Node.js 18+
+- PostgreSQL in esecuzione localmente
 
-  <p>The fastest path from prompt to production with Gemini.</p>
+## Setup Locale
 
-  <a href="https://aistudio.google.com/apps">Start building</a>
+1. Installa PostgreSQL:
+   ```bash
+   brew install postgresql@16
+   ```
+2. Avvia PostgreSQL:
+   ```bash
+   brew services start postgresql@16
+   ```
+3. Crea il database:
+   ```bash
+   createdb magazzino_db
+   ```
+4. Installa dipendenze:
+   ```bash
+   npm install
+   ```
+5. Esegui migration:
+   ```bash
+   npx prisma migrate dev --name init
+   ```
+6. Popola dati di test:
+   ```bash
+   npx prisma db seed
+   ```
+7. Avvia il server:
+   ```bash
+   npm run dev
+   ```
+8. Apri il browser su: http://localhost:3000
 
-</div>
+## Credenziali di Test
+- **Admin**: admin@example.com / Password123!
+- **Manager**: manager@example.com / Password123!
+- **Viewer**: viewer@example.com / Password123!

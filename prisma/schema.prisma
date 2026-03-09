@@ -1,0 +1,213 @@
+generator client {
+  provider = "prisma-client-js"
+}
+
+datasource db {
+  provider = "postgresql"
+  url      = env("DATABASE_URL")
+}
+
+enum Ruolo {
+  ADMIN
+  MANAGER
+  VIEWER
+}
+
+enum TipoMovimento {
+  VENDITA
+  CARICO
+  SCARICO
+  RETTIFICA
+  ANNULLAMENTO
+}
+
+model User {
+  id           String   @id @default(cuid())
+  email        String   @unique
+  passwordHash String
+  nome         String
+  cognome      String
+  ruolo        Ruolo    @default(VIEWER)
+  attivo       Boolean  @default(true)
+  createdAt    DateTime @default(now())
+  updatedAt    DateTime @updatedAt
+
+  venditeCreate     Vendita[]            @relation("VenditaCreatore")
+  movimentiCreati   MovimentoMagazzino[] @relation("MovimentoCreatore")
+}
+
+model Fornitore {
+  id        String   @id @default(cuid())
+  nome      String
+  email     String?
+  telefono  String?
+  indirizzo String?
+  note      String?
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+
+  prodotti ProdottoFornitore[]
+  parti    ParteFornitore[]
+}
+
+model Parte {
+  id                  String   @id @default(cuid())
+  codice              String   @unique
+  nome                String
+  descrizione         String?
+  unitaMisura         String
+  quantitaDisponibile Float    @default(0)
+  quantitaMinima      Float    @default(0)
+  costoUnitario       Float?
+  note                String?
+  attivo              Boolean  @default(true)
+  createdAt           DateTime @default(now())
+  updatedAt           DateTime @updatedAt
+
+  fornitori ParteFornitore[]
+  bom       BOM[]
+  bomVariante BOMVariante[]
+  movimenti MovimentoMagazzino[]
+}
+
+model ParteFornitore {
+  id                  String   @id @default(cuid())
+  parteId             String
+  fornitoreId         String
+  prezzoAcquisto      Float
+  tempoConsegnaGiorni Int?
+  note                String?
+
+  parte     Parte     @relation(fields: [parteId], references: [id], onDelete: Cascade)
+  fornitore Fornitore @relation(fields: [fornitoreId], references: [id], onDelete: Cascade)
+
+  @@unique([parteId, fornitoreId])
+}
+
+model Prodotto {
+  id                  String   @id @default(cuid())
+  codice              String   @unique
+  nome                String
+  descrizione         String?
+  categoria           String?
+  prezzoVendita       Float
+  quantitaDisponibile Float    @default(0)
+  quantitaMinima      Float    @default(0)
+  note                String?
+  attivo              Boolean  @default(true)
+  createdAt           DateTime @default(now())
+  updatedAt           DateTime @updatedAt
+
+  varianti  Variante[]
+  bom       BOM[]
+  fornitori ProdottoFornitore[]
+  righe     RigaVendita[]
+  movimenti MovimentoMagazzino[]
+}
+
+model Variante {
+  id                  String   @id @default(cuid())
+  prodottoId          String
+  nome                String
+  sku                 String   @unique
+  quantitaDisponibile Float    @default(0)
+  quantitaMinima      Float    @default(0)
+  prezzoOverride      Float?
+  attivo              Boolean  @default(true)
+
+  prodotto  Prodotto             @relation(fields: [prodottoId], references: [id], onDelete: Cascade)
+  bom       BOMVariante[]
+  righe     RigaVendita[]
+  movimenti MovimentoMagazzino[]
+}
+
+model BOM {
+  id                String @id @default(cuid())
+  prodottoId        String
+  parteId           String
+  quantitaRichiesta Float
+
+  prodotto Prodotto @relation(fields: [prodottoId], references: [id], onDelete: Cascade)
+  parte    Parte    @relation(fields: [parteId], references: [id], onDelete: Restrict)
+
+  @@unique([prodottoId, parteId])
+}
+
+model BOMVariante {
+  id                String @id @default(cuid())
+  varianteId        String
+  parteId           String
+  quantitaRichiesta Float
+
+  variante Variante @relation(fields: [varianteId], references: [id], onDelete: Cascade)
+  parte    Parte    @relation(fields: [parteId], references: [id], onDelete: Restrict)
+
+  @@unique([varianteId, parteId])
+}
+
+model ProdottoFornitore {
+  id                 String  @id @default(cuid())
+  prodottoId         String
+  fornitoreId        String
+  prezzoAcquisto     Float
+  fornitorePreferito Boolean @default(false)
+  note               String?
+
+  prodotto  Prodotto  @relation(fields: [prodottoId], references: [id], onDelete: Cascade)
+  fornitore Fornitore @relation(fields: [fornitoreId], references: [id], onDelete: Cascade)
+
+  @@unique([prodottoId, fornitoreId])
+}
+
+model Vendita {
+  id                      String   @id @default(cuid())
+  numeroOrdine            String   @unique
+  data                    DateTime @default(now())
+  clienteNome             String?
+  clienteEmail            String?
+  note                    String?
+  totale                  Float
+  annullata               Boolean  @default(false)
+  motivazioneAnnullamento String?
+  creataDaId              String
+  createdAt               DateTime @default(now())
+
+  creatore  User                 @relation("VenditaCreatore", fields: [creataDaId], references: [id])
+  righe     RigaVendita[]
+  movimenti MovimentoMagazzino[]
+}
+
+model RigaVendita {
+  id             String  @id @default(cuid())
+  venditaId      String
+  prodottoId     String
+  varianteId     String?
+  quantita       Float
+  prezzoUnitario Float
+  subtotale      Float
+
+  vendita  Vendita   @relation(fields: [venditaId], references: [id], onDelete: Cascade)
+  prodotto Prodotto  @relation(fields: [prodottoId], references: [id], onDelete: Restrict)
+  variante Variante? @relation(fields: [varianteId], references: [id], onDelete: Restrict)
+}
+
+model MovimentoMagazzino {
+  id                 String        @id @default(cuid())
+  tipo               TipoMovimento
+  parteId            String?
+  prodottoId         String?
+  varianteId         String?
+  quantita           Float
+  quantitaPrecedente Float
+  quantitaSuccessiva Float
+  venditaId          String?
+  note               String?
+  creatoDaId         String
+  createdAt          DateTime      @default(now())
+
+  parte    Parte?    @relation(fields: [parteId], references: [id], onDelete: SetNull)
+  prodotto Prodotto? @relation(fields: [prodottoId], references: [id], onDelete: SetNull)
+  variante Variante? @relation(fields: [varianteId], references: [id], onDelete: SetNull)
+  vendita  Vendita?  @relation(fields: [venditaId], references: [id], onDelete: SetNull)
+  creatore User      @relation("MovimentoCreatore", fields: [creatoDaId], references: [id])
+}
