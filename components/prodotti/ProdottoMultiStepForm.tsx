@@ -28,7 +28,6 @@ export function ProdottoMultiStepForm({ initialData, parti, fornitori }: Prodott
     nome: initialData?.nome || '',
     descrizione: initialData?.descrizione || '',
     categoria: initialData?.categoria || '',
-    unitaMisura: initialData?.unitaMisura || 'PZ',
     quantitaMinima: initialData?.quantitaMinima || 0,
     prezzoVendita: initialData?.prezzoVendita || 0,
     note: initialData?.note || '',
@@ -54,8 +53,8 @@ export function ProdottoMultiStepForm({ initialData, parti, fornitori }: Prodott
 
   const handleNext = () => {
     if (currentStep === 1) {
-      if (!base.codice || !base.nome || !base.unitaMisura) {
-        toast.error('Compila i campi obbligatori (Codice, Nome, Unità di Misura)');
+      if (!base.codice || !base.nome) {
+        toast.error('Compila i campi obbligatori (Codice, Nome)');
         return;
       }
     }
@@ -132,9 +131,6 @@ export function ProdottoMultiStepForm({ initialData, parti, fornitori }: Prodott
               </FormField>
               <FormField label="Categoria">
                 <Input value={base.categoria} onChange={e => setBase({...base, categoria: e.target.value})} placeholder="Es. Arredamento" />
-              </FormField>
-              <FormField label="Unità di Misura" required>
-                <Input value={base.unitaMisura} onChange={e => setBase({...base, unitaMisura: e.target.value})} placeholder="Es. PZ, SET" />
               </FormField>
               <FormField label="Quantità Minima" required>
                 <Input type="number" value={base.quantitaMinima} onChange={e => setBase({...base, quantitaMinima: Number(e.target.value)})} />

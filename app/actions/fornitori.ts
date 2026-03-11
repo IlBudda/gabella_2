@@ -10,8 +10,6 @@ const fornitoreSchema = z.object({
   email: z.string().email('Email non valida').optional().or(z.literal('')),
   telefono: z.string().optional(),
   indirizzo: z.string().optional(),
-  piva: z.string().optional(),
-  codiceFiscale: z.string().optional(),
   note: z.string().optional(),
 });
 
@@ -28,8 +26,6 @@ export async function salvaFornitore(data: z.infer<typeof fornitoreSchema>) {
           email: validatedData.email || null,
           telefono: validatedData.telefono,
           indirizzo: validatedData.indirizzo,
-          piva: validatedData.piva,
-          codiceFiscale: validatedData.codiceFiscale,
           note: validatedData.note,
         },
       });
@@ -41,8 +37,6 @@ export async function salvaFornitore(data: z.infer<typeof fornitoreSchema>) {
           email: validatedData.email || null,
           telefono: validatedData.telefono,
           indirizzo: validatedData.indirizzo,
-          piva: validatedData.piva,
-          codiceFiscale: validatedData.codiceFiscale,
           note: validatedData.note,
         },
       });

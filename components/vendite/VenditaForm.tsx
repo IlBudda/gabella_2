@@ -51,7 +51,7 @@ export function VenditaForm({ prodotti }: VenditaFormProps) {
     watch,
     setValue,
     formState: { errors },
-  } = useForm<VenditaFormValues>({
+  } = useForm({
     resolver: zodResolver(venditaSchema),
     defaultValues: {
       data: new Date().toISOString().slice(0, 10),
@@ -67,7 +67,7 @@ export function VenditaForm({ prodotti }: VenditaFormProps) {
     name: 'righe',
   });
 
-  const righe = watch('righe');
+  const righe = watch('righe') as any[];
   const totale = righe.reduce((acc, riga) => acc + (riga.quantita * riga.prezzoUnitario), 0);
 
   // Reset verification when rows change
@@ -134,7 +134,7 @@ export function VenditaForm({ prodotti }: VenditaFormProps) {
   ];
 
   return (
-    <form onSubmit={handleSubmit(onSubmit)} className="grid grid-cols-1 lg:grid-cols-3 gap-8">
+    <form onSubmit={handleSubmit((data: any) => onSubmit(data))} className="grid grid-cols-1 lg:grid-cols-3 gap-8">
       
       {/* Sinistra (2/3) - Righe ordine */}
       <div className="lg:col-span-2 space-y-6">

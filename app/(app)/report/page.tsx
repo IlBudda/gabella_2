@@ -107,7 +107,6 @@ export default async function ReportPage({
             nome: `${p.nome} - ${v.nome}`,
             disponibile: v.quantitaDisponibile,
             minima: v.quantitaMinima,
-            unitaMisura: p.unitaMisura,
           });
         });
       } else {
@@ -117,7 +116,6 @@ export default async function ReportPage({
           nome: p.nome,
           disponibile: p.quantitaDisponibile,
           minima: p.quantitaMinima,
-          unitaMisura: p.unitaMisura,
         });
       }
     });
@@ -131,8 +129,8 @@ export default async function ReportPage({
     const columns = [
       { header: 'Codice', accessor: (row: any) => <span className="font-medium">{row.codice}</span> },
       { header: 'Nome', accessor: (row: any) => row.nome },
-      { header: 'Disponibile', accessor: (row: any) => `${row.disponibile} ${row.unitaMisura}` },
-      { header: 'Minima', accessor: (row: any) => `${row.minima} ${row.unitaMisura}` },
+      { header: 'Disponibile', accessor: (row: any) => `${row.disponibile}` },
+      { header: 'Minima', accessor: (row: any) => `${row.minima}` },
       { 
         header: 'Stato', 
         accessor: (row: any) => {

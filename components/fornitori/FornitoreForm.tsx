@@ -38,7 +38,7 @@ export function FornitoreForm({ initialData }: FornitoreFormProps) {
     register,
     handleSubmit,
     formState: { errors },
-  } = useForm<FornitoreFormValues>({
+  } = useForm({
     resolver: zodResolver(fornitoreSchema),
     defaultValues: {
       id: initialData?.id || '',
@@ -71,7 +71,7 @@ export function FornitoreForm({ initialData }: FornitoreFormProps) {
   };
 
   return (
-    <form onSubmit={handleSubmit(onSubmit)} className="space-y-6 max-w-2xl">
+    <form onSubmit={handleSubmit((data: any) => onSubmit(data))} className="space-y-6 max-w-2xl">
       <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
         <FormField label="Nome / Ragione Sociale" error={errors.nome?.message} required className="md:col-span-2">
           <Input {...register('nome')} placeholder="Es. Mario Rossi S.p.A." />

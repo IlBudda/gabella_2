@@ -2,8 +2,7 @@
 
 import { useState } from 'react';
 import { useRouter } from 'next/navigation';
-import { useForm } from 'react-form'; // Wait, I should use react-hook-form and zod
-import { useForm as useReactHookForm } from 'react-hook-form';
+import { useForm } from 'react-hook-form';
 import { zodResolver } from '@hookform/resolvers/zod';
 import * as z from 'zod';
 import { Button } from '@/components/ui/button';
@@ -40,7 +39,7 @@ export function ParteForm({ initialData }: ParteFormProps) {
     register,
     handleSubmit,
     formState: { errors },
-  } = useReactHookForm<ParteFormValues>({
+  } = useForm({
     resolver: zodResolver(parteSchema),
     defaultValues: {
       id: initialData?.id || '',
@@ -74,7 +73,7 @@ export function ParteForm({ initialData }: ParteFormProps) {
   };
 
   return (
-    <form onSubmit={handleSubmit(onSubmit)} className="space-y-6 max-w-2xl">
+    <form onSubmit={handleSubmit((data: any) => onSubmit(data))} className="space-y-6 max-w-2xl">
       <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
         <FormField label="Codice" error={errors.codice?.message} required>
           <Input {...register('codice')} placeholder="Es. PRT-001" />

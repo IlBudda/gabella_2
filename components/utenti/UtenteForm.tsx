@@ -44,7 +44,7 @@ export function UtenteForm({ initialData, onSuccess, onCancel }: UtenteFormProps
     register,
     handleSubmit,
     formState: { errors },
-  } = useForm<UtenteFormValues>({
+  } = useForm({
     resolver: zodResolver(utenteSchema),
     defaultValues: {
       id: initialData?.id || '',
@@ -75,7 +75,7 @@ export function UtenteForm({ initialData, onSuccess, onCancel }: UtenteFormProps
   };
 
   return (
-    <form id="utente-form" onSubmit={handleSubmit(onSubmit)} className="space-y-6">
+    <form id="utente-form" onSubmit={handleSubmit((data: any) => onSubmit(data))} className="space-y-6">
       <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
         <FormField label="Nome" error={errors.nome?.message} required>
           <Input {...register('nome')} placeholder="Es. Mario" />

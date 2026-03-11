@@ -19,7 +19,6 @@ const prodottoSchema = z.object({
   nome: z.string().min(1, 'Il nome è obbligatorio'),
   descrizione: z.string().optional(),
   categoria: z.string().optional(),
-  unitaMisura: z.string().min(1, 'L\'unità di misura è obbligatoria'),
   quantitaMinima: z.coerce.number().min(0, 'La quantità minima deve essere >= 0'),
   prezzoVendita: z.coerce.number().min(0, 'Il prezzo di vendita deve essere >= 0'),
   note: z.string().optional(),
@@ -40,7 +39,7 @@ export function ProdottoForm({ initialData }: ProdottoFormProps) {
     register,
     handleSubmit,
     formState: { errors },
-  } = useForm<ProdottoFormValues>({
+  } = useForm({
     resolver: zodResolver(prodottoSchema),
     defaultValues: {
       id: initialData?.id || '',
@@ -48,7 +47,6 @@ export function ProdottoForm({ initialData }: ProdottoFormProps) {
       nome: initialData?.nome || '',
       descrizione: initialData?.descrizione || '',
       categoria: initialData?.categoria || '',
-      unitaMisura: initialData?.unitaMisura || 'PZ',
       quantitaMinima: initialData?.quantitaMinima || 0,
       prezzoVendita: initialData?.prezzoVendita || 0,
       note: initialData?.note || '',
@@ -75,7 +73,7 @@ export function ProdottoForm({ initialData }: ProdottoFormProps) {
   };
 
   return (
-    <form onSubmit={handleSubmit(onSubmit)} className="space-y-6 max-w-2xl">
+    <form onSubmit={handleSubmit((data: any) => onSubmit(data))} className="space-y-6 max-w-2xl">
       <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
         <FormField label="Codice" error={errors.codice?.message} required>
           <Input {...register('codice')} placeholder="Es. PRD-001" />
@@ -87,10 +85,6 @@ export function ProdottoForm({ initialData }: ProdottoFormProps) {
         
         <FormField label="Categoria" error={errors.categoria?.message}>
           <Input {...register('categoria')} placeholder="Es. Arredamento" />
-        </FormField>
-        
-        <FormField label="Unità di Misura" error={errors.unitaMisura?.message} required>
-          <Input {...register('unitaMisura')} placeholder="Es. PZ, SET" />
         </FormField>
         
         <FormField label="Quantità Minima" error={errors.quantitaMinima?.message} required>
